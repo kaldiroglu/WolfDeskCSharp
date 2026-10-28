@@ -21,3 +21,23 @@ cases as the Java version's.
 - `TenantTests` — a tenant is saved and found with its categories and products; a blank
   name is rejected; a failed script rolls back; rolled-back changes are not kept; a deleted
   tenant is gone.
+
+## Ticketing (domain model)
+
+- `ValueObjectTests` — ids are equal by value and never empty; a response timeframe ends
+  after it starts and reports the share of time left.
+- `TicketTests` — the aggregate's rules: who may write and acknowledge, when an escalation
+  may be requested, automatic escalation on a missed deadline, reassignment of an
+  escalated ticket with unread messages and less than half its time left, closing, and a
+  restored ticket keeping its state.
+- `ResponseTimeframeCalculationServiceTests` — the domain service counts working time in
+  shifts only, applies the escalation factor, and fails when the shifts do not cover the
+  response time.
+- `InMemoryTicketRepositoryTests` — each save increments the version; a ticket changed
+  since it was loaded is not saved.
+- `TicketServiceTests` — events are published after the save; the agent's deadline comes
+  from the domain service; a concurrent change and a rejected escalation are reported as
+  failures, not thrown.
+
+The concurrency tests were checked against a deliberately broken repository (version check
+removed): two of them failed, as they should.
