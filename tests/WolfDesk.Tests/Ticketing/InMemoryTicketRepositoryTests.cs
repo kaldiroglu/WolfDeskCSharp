@@ -37,6 +37,27 @@ public class InMemoryTicketRepositoryTests
     }
 
     [Fact]
+    public void EverySaveTakesTheNextCheckpoint()
+    {
+        _repository.Save(NewTicket());
+        _repository.Save(NewTicket());
+
+        Assert.Equal([1L, 2L], _repository.ChangesAfter(0).Select(c => c.Checkpoint));
+    }
+
+    [Fact]
+    public void ATicketSavedTwiceIsOneChangeAtItsLatestCheckpoint()
+    {
+        var ticket = NewTicket();
+        _repository.Save(ticket);
+        _repository.Save(_repository.Load(ticket.Id));
+
+        var change = Assert.Single(_repository.ChangesAfter(0));
+        Assert.Equal(2L, change.Checkpoint);
+        Assert.Empty(_repository.ChangesAfter(2));
+    }
+
+    [Fact]
     public void AnUnknownTicketIsNotFound() =>
         Assert.Throws<TicketNotFoundException>(() => _repository.Load(TicketId.Random()));
 }
