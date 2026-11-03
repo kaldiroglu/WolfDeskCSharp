@@ -28,7 +28,7 @@ public class AgentQueueProjectionTests
     }
 
     private TicketService ServiceAt(DateTimeOffset now) =>
-        new(_tickets, _timeframes, new InMemoryEventPublisher(), new FixedTimeProvider(now));
+        new(_tickets, _timeframes, new FixedTimeProvider(now));
 
     private TicketId OpenAndAssign(string title, Priority priority)
     {

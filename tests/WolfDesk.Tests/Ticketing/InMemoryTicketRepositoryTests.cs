@@ -58,6 +58,41 @@ public class InMemoryTicketRepositoryTests
     }
 
     [Fact]
+    public void ASaveKeepsTheTicketsNewEventsInTheOutbox()
+    {
+        _repository.Save(NewTicket());
+
+        var record = Assert.Single(_repository.Unpublished());
+        Assert.IsType<TicketOpened>(record.Event);
+    }
+
+    [Fact]
+    public void ARejectedSaveKeepsNoEventsInTheOutbox()
+    {
+        var customer = UserId.Random();
+        var ticket = Ticket.Open(TicketId.Random(), customer, [ProductId.Random()], "Cannot log in", Priority.Low, Now);
+        _repository.Save(ticket);
+        var first = _repository.Load(ticket.Id);
+        var second = _repository.Load(ticket.Id);
+        _repository.Save(first);
+        second.Execute(new CloseTicket(customer, Now));
+
+        Assert.Throws<ConcurrencyException>(() => _repository.Save(second));
+        Assert.Single(_repository.Unpublished());
+    }
+
+    [Fact]
+    public void APublishedEventLeavesTheOutbox()
+    {
+        _repository.Save(NewTicket());
+        _repository.Save(NewTicket());
+
+        _repository.MarkPublished(_repository.Unpublished()[0].Position);
+
+        Assert.Equal([2L], _repository.Unpublished().Select(r => r.Position));
+    }
+
+    [Fact]
     public void AnUnknownTicketIsNotFound() =>
         Assert.Throws<TicketNotFoundException>(() => _repository.Load(TicketId.Random()));
 }

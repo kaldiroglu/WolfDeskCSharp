@@ -10,7 +10,6 @@ public class TicketServiceTests
     private readonly UserId _customer = UserId.Random();
     private readonly UserId _agent = UserId.Random();
     private readonly InMemoryTicketRepository _tickets = new();
-    private readonly InMemoryEventPublisher _publisher = new();
     private readonly ResponseTimeframeCalculationService _timeframes;
 
     public TicketServiceTests()
@@ -23,7 +22,7 @@ public class TicketServiceTests
     }
 
     private TicketService ServiceAt(DateTimeOffset now, ITicketRepository repository) =>
-        new(repository, _timeframes, _publisher, new FixedTimeProvider(now));
+        new(repository, _timeframes, new FixedTimeProvider(now));
 
     private TicketId OpenAndAssign()
     {
@@ -34,11 +33,11 @@ public class TicketServiceTests
     }
 
     [Fact]
-    public void TheEventsArePublishedAfterTheTicketIsSaved()
+    public void TheEventsAreSavedInTheOutboxWithTheTicket()
     {
         OpenAndAssign();
 
-        Assert.Equal(["TicketOpened", "TicketAssigned"], _publisher.Published.Select(e => e.GetType().Name));
+        Assert.Equal(["TicketOpened", "TicketAssigned"], _tickets.Unpublished().Select(r => r.Event.GetType().Name));
     }
 
     [Fact]
@@ -46,7 +45,7 @@ public class TicketServiceTests
     {
         var id = OpenAndAssign();
 
-        var assigned = Assert.IsType<TicketAssigned>(_publisher.Published[1]);
+        var assigned = Assert.IsType<TicketAssigned>(_tickets.Unpublished()[1].Event);
         Assert.Equal(id, assigned.TicketId);
         Assert.Equal(DateTimeOffset.Parse("2026-10-28T12:00:00Z"), assigned.ResponseDeadline);
     }

@@ -8,12 +8,16 @@ namespace dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 /// <c>UPDATE tickets ... WHERE ticket_id=@id and agg_version=@expected_version</c>.
 /// Each save also stamps the row with the next checkpoint, like SQL Server's
 /// <c>rowversion</c> column (Figure 8-15), so the read models can catch up on the changes.
+/// The ticket's new domain events go to an outbox table in the same save, so the ticket and
+/// its events are committed together (chapter 9, p. 145).
 /// </summary>
-public class InMemoryTicketRepository : ITicketRepository, ITicketChangeFeed
+public class InMemoryTicketRepository : ITicketRepository, ITicketChangeFeed, IOutbox
 {
     private readonly Dictionary<TicketId, TicketChange> _rows = new();
+    private readonly SortedDictionary<long, DomainEvent> _outbox = new();
     private readonly Lock _lock = new();
     private long _lastCheckpoint;
+    private long _lastOutboxPosition;
 
     public Ticket Load(TicketId id)
     {
@@ -33,6 +37,23 @@ public class InMemoryTicketRepository : ITicketRepository, ITicketChangeFeed
                 throw new ConcurrencyException(snapshot.Id, snapshot.Version, storedVersion);
             _lastCheckpoint++;
             _rows[snapshot.Id] = new TicketChange(_lastCheckpoint, snapshot with { Version = storedVersion + 1 });
+            foreach (var domainEvent in ticket.PullDomainEvents()) _outbox[++_lastOutboxPosition] = domainEvent;
+        }
+    }
+
+    public IReadOnlyList<OutboxRecord> Unpublished()
+    {
+        lock (_lock)
+        {
+            return _outbox.Select(row => new OutboxRecord(row.Key, row.Value)).ToList();
+        }
+    }
+
+    public void MarkPublished(long position)
+    {
+        lock (_lock)
+        {
+            _outbox.Remove(position);
         }
     }
 

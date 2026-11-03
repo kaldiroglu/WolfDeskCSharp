@@ -2,15 +2,16 @@ namespace dev.kaldiroglu.WolfDesk.Ticketing;
 
 /// <summary>
 /// The application service: each operation loads one ticket, executes one command on it,
-/// saves it, and then publishes its domain events. It holds no business rules itself.
+/// and saves it. It holds no business rules itself. It publishes nothing: the repository
+/// keeps the ticket's events in the outbox, and <see cref="OutboxRelay"/> publishes them.
 /// </summary>
 public sealed class TicketService(ITicketRepository ticketRepository,
-    ResponseTimeframeCalculationService timeframes, IEventPublisher publisher, TimeProvider clock)
+    ResponseTimeframeCalculationService timeframes, TimeProvider clock)
 {
     public TicketId Open(UserId customer, IReadOnlyList<ProductId> products, string title, Priority priority)
     {
         var ticket = Ticket.Open(TicketId.Random(), customer, products, title, priority, clock.GetUtcNow());
-        Save(ticket);
+        ticketRepository.Save(ticket);
         return ticket.Id;
     }
 
@@ -20,14 +21,14 @@ public sealed class TicketService(ITicketRepository ticketRepository,
         var now = clock.GetUtcNow();
         var timeframe = timeframes.CalculateAgentResponseDeadline(agent, ticket.Priority, ticket.IsEscalated, now);
         ticket.Execute(new AssignAgent(agent, timeframe, now));
-        Save(ticket);
+        ticketRepository.Save(ticket);
     }
 
     public MessageId AddMessage(TicketId id, UserId from, string body)
     {
         var ticket = ticketRepository.Load(id);
         ticket.Execute(new AddMessage(from, body, clock.GetUtcNow()));
-        Save(ticket);
+        ticketRepository.Save(ticket);
         return ticket.Messages[^1].Id;
     }
 
@@ -35,7 +36,7 @@ public sealed class TicketService(ITicketRepository ticketRepository,
     {
         var ticket = ticketRepository.Load(id);
         ticket.Execute(new AcknowledgeMessage(messageId, by, clock.GetUtcNow()));
-        Save(ticket);
+        ticketRepository.Save(ticket);
     }
 
     /// <summary>Listing 06-10: a concurrent change is reported back, not thrown.</summary>
@@ -46,7 +47,7 @@ public sealed class TicketService(ITicketRepository ticketRepository,
             var ticket = ticketRepository.Load(id);
             var cmd = new RequestEscalation(requestedBy, clock.GetUtcNow());
             ticket.Execute(cmd);
-            Save(ticket);
+            ticketRepository.Save(ticket);
             return ExecutionResult.Succeeded();
         }
         catch (Exception ex) when (ex is ConcurrencyException or TicketRuleViolationException)
@@ -59,20 +60,13 @@ public sealed class TicketService(ITicketRepository ticketRepository,
     {
         var ticket = ticketRepository.Load(id);
         ticket.Execute(new EvaluateAutomaticActions(clock.GetUtcNow(), replacementAgent));
-        Save(ticket);
+        ticketRepository.Save(ticket);
     }
 
     public void Close(TicketId id, UserId closedBy)
     {
         var ticket = ticketRepository.Load(id);
         ticket.Execute(new CloseTicket(closedBy, clock.GetUtcNow()));
-        Save(ticket);
-    }
-
-    /// <summary>The events are published after the save; chapter 9's outbox makes the pair reliable.</summary>
-    private void Save(Ticket ticket)
-    {
         ticketRepository.Save(ticket);
-        foreach (var domainEvent in ticket.PullDomainEvents()) publisher.Publish(domainEvent);
     }
 }
