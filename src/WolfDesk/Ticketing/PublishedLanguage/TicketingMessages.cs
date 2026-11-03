@@ -1,5 +1,3 @@
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
-
 namespace dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
 // Ticketing's published language (chapter 9, p. 140): the public messages other bounded

@@ -1,7 +1,5 @@
 using TicketClosed = dev.kaldiroglu.WolfDesk.Ticketing.EventSourced.TicketClosed;
 using TicketOpened = dev.kaldiroglu.WolfDesk.Ticketing.EventSourced.TicketOpened;
-using dev.kaldiroglu.WolfDesk.Ticketing.Application;
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
 using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.EventSourced;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;

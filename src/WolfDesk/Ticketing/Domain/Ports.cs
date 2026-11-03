@@ -1,8 +1,6 @@
 using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
-using dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
-namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>
 /// Loads and saves tickets, one per transaction. <see cref="Save"/> uses optimistic
@@ -30,10 +28,4 @@ public interface IOutbox
     IReadOnlyList<OutboxRecord> Unpublished();
 
     void MarkPublished(long position);
-}
-
-/// <summary>Publishes ticketing's public messages to the rest of the system, through a message bus.</summary>
-public interface IEventPublisher
-{
-    void Publish(TicketingMessage message);
 }

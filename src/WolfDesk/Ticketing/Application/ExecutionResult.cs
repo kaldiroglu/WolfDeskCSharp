@@ -1,5 +1,3 @@
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
-
 namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>What an application service operation reports back: success, or failure with its reason.</summary>

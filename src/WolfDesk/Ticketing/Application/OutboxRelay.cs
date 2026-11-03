@@ -1,3 +1,5 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
 namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>

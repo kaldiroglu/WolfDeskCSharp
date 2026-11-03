@@ -1,4 +1,3 @@
-using dev.kaldiroglu.WolfDesk.Ticketing.Application;
 using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.EventSourced;
 

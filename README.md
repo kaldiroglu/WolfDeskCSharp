@@ -37,7 +37,7 @@ passes.
 | `Billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
 | `Tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
 | `Ticketing.Domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `Domain.Commands`, its domain events in `Domain.Events` |
-| `Ticketing.Application` | Application service | 6 | `TicketService`, the ports it needs, and the outbox relay |
+| `Ticketing.Application` | Application service | 6 | `TicketService`, the outbox relay and its event publisher port |
 | `Ticketing.EventSourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 | `Ticketing.ReadModels` | CQRS | 8 | The agents' queues, projected from the saved tickets |
 | `Ticketing.PublishedLanguage` | Published language | 9 | The public messages ticketing publishes through its outbox |
@@ -55,12 +55,14 @@ Each module has the architecture its business logic needs (chapter 8):
   are its service layer.
 - `Billing` is transaction scripts, which are a service layer already; they work on the
   database through the `IBillingDatabase` interface.
-- `Ticketing` is ports & adapters, one namespace per role. The domain model
-  (`Ticketing.Domain`) and the application service (`Ticketing.Application`) define the
-  ports they need — `IDepartmentRepository` in the domain, used by its domain service;
-  `ITicketRepository`, `IOutbox` and `IEventPublisher` in the application layer — and
-  `Ticketing.InMemory` holds the adapters. No production code outside it uses an adapter,
-  and the domain uses nothing from the application layer.
+- `Ticketing` is ports & adapters, one namespace per role. The business logic layer
+  defines the ports (chapter 8, p. 127): `ITicketRepository`, `IOutbox` and
+  `IDepartmentRepository` are in `Ticketing.Domain`, and `Ticketing.InMemory` holds the
+  adapters. The one port in `Ticketing.Application` is `IEventPublisher`: it publishes the
+  published language, not the domain's events, and only the outbox relay uses it, so the
+  domain stays independent of the published language. Only `InMemory` and the demo, the
+  composition root, use an adapter, and the domain uses nothing from the application
+  layer.
 - `Message` stays in `Ticketing.Domain` with `Ticket`. Its constructor and `MarkAsRead`
   are `internal`, which in C# opens them to the whole assembly, not only to the namespace.
 - The tags up to `stage-ch09` keep the earlier layout, with these types directly in

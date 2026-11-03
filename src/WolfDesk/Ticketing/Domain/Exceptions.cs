@@ -1,6 +1,4 @@
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
-
-namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>Someone else saved the ticket after it was loaded.</summary>
 public class ConcurrencyException(TicketId id, int expectedVersion, int actualVersion)
