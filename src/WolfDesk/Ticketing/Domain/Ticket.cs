@@ -1,4 +1,7 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>
 /// The ticket aggregate. Its state changes only through its commands; each command checks

@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>A message's identity inside its ticket. A value object: two ids with the same value are equal.</summary>
 public sealed record MessageId

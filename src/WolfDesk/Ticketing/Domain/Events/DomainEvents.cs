@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
 
 /// <summary>Something significant that has happened to a ticket. Named in the past tense.</summary>
 public abstract record DomainEvent(TicketId TicketId, DateTimeOffset OccurredAt);

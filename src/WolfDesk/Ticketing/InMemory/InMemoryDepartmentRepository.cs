@@ -1,3 +1,5 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
 namespace dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 
 /// <summary>Policies and shift schedules held in dictionaries.</summary>

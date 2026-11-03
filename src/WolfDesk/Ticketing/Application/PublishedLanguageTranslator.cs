@@ -1,6 +1,8 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>
 /// Translates the ticket's domain events into ticketing's published language: the

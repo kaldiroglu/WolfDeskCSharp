@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>
 /// A domain service (listing 06-18): stateless business logic that belongs to no single

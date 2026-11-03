@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>
 /// The publishing relay of the outbox pattern, pull-based (chapter 9, pp. 145–146): it reads

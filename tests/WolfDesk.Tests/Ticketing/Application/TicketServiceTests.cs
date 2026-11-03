@@ -1,7 +1,9 @@
-using dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Application;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing.Application;
 
 public class TicketServiceTests
 {

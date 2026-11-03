@@ -1,3 +1,5 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
 namespace dev.kaldiroglu.WolfDesk.Ticketing.ReadModels;
 
 /// <summary>One open ticket as an agent's queue shows it.</summary>

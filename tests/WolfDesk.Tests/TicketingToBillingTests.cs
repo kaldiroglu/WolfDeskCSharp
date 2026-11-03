@@ -1,7 +1,8 @@
-using dev.kaldiroglu.WolfDesk.Billing;
 using dev.kaldiroglu.WolfDesk.Billing.InMemory;
+using dev.kaldiroglu.WolfDesk.Billing;
 using dev.kaldiroglu.WolfDesk.Tests.Ticketing;
-using dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Application;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 
 namespace dev.kaldiroglu.WolfDesk.Tests;

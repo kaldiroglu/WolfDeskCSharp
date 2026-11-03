@@ -36,7 +36,8 @@ passes.
 |---|---|---|---|
 | `Billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
 | `Tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
-| `Ticketing` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing |
+| `Ticketing.Domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `Domain.Commands`, its domain events in `Domain.Events` |
+| `Ticketing.Application` | Application service | 6 | `TicketService`, the ports it needs, and the outbox relay |
 | `Ticketing.EventSourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 | `Ticketing.ReadModels` | CQRS | 8 | The agents' queues, projected from the saved tickets |
 | `Ticketing.PublishedLanguage` | Published language | 9 | The public messages ticketing publishes through its outbox |
@@ -54,10 +55,16 @@ Each module has the architecture its business logic needs (chapter 8):
   are its service layer.
 - `Billing` is transaction scripts, which are a service layer already; they work on the
   database through the `IBillingDatabase` interface.
-- `Ticketing` is ports & adapters. The domain model and the application service
-  (`TicketService`) define the ports they need — `ITicketRepository`, `IEventPublisher`,
-  `IDepartmentRepository` — and `Ticketing.InMemory` holds the adapters. Nothing in
-  `Ticketing` uses an adapter.
+- `Ticketing` is ports & adapters, one namespace per role. The domain model
+  (`Ticketing.Domain`) and the application service (`Ticketing.Application`) define the
+  ports they need — `IDepartmentRepository` in the domain, used by its domain service;
+  `ITicketRepository`, `IOutbox` and `IEventPublisher` in the application layer — and
+  `Ticketing.InMemory` holds the adapters. No production code outside it uses an adapter,
+  and the domain uses nothing from the application layer.
+- `Message` stays in `Ticketing.Domain` with `Ticket`. Its constructor and `MarkAsRead`
+  are `internal`, which in C# opens them to the whole assembly, not only to the namespace.
+- The tags up to `stage-ch09` keep the earlier layout, with these types directly in
+  `Ticketing`; the decks quote the code at those tags.
 - `Ticketing.EventSourced` is ports & adapters too: `IEventStore` is its port, and
   `InMemoryEventStore` in `Ticketing.InMemory` its adapter.
 - `Ticketing.ReadModels` adds CQRS: the `Ticket` aggregate is the command execution model,

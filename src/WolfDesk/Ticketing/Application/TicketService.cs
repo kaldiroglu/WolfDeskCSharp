@@ -1,4 +1,7 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>
 /// The application service: each operation loads one ticket, executes one command on it,

@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>
 /// A support department's response rules: the working time an agent has per priority, the

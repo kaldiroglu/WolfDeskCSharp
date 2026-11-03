@@ -1,3 +1,6 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
 namespace dev.kaldiroglu.WolfDesk.Ticketing.EventSourced;
 
 /// <summary>

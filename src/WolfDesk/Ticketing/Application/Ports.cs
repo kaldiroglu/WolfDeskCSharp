@@ -1,6 +1,8 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>
 /// Loads and saves tickets, one per transaction. <see cref="Save"/> uses optimistic
@@ -34,12 +36,4 @@ public interface IOutbox
 public interface IEventPublisher
 {
     void Publish(TicketingMessage message);
-}
-
-public interface IDepartmentRepository
-{
-    DepartmentPolicy GetDepartmentPolicy(UserId agentId);
-
-    /// <summary>The agent's shifts that overlap the period from <paramref name="from"/> to <paramref name="to"/>.</summary>
-    IReadOnlyList<Shift> GetUpcomingShifts(UserId agentId, DateTimeOffset from, DateTimeOffset to);
 }

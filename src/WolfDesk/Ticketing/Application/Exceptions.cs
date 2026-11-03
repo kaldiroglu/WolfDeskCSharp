@@ -1,7 +1,6 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
-/// <summary>A command was rejected because it would break one of the ticket's rules.</summary>
-public class TicketRuleViolationException(string message) : Exception(message);
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Application;
 
 /// <summary>Someone else saved the ticket after it was loaded.</summary>
 public class ConcurrencyException(TicketId id, int expectedVersion, int actualVersion)

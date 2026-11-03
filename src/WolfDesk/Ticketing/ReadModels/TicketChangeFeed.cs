@@ -1,3 +1,5 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+
 namespace dev.kaldiroglu.WolfDesk.Ticketing.ReadModels;
 
 /// <summary>A saved ticket with the checkpoint its row was written at.</summary>

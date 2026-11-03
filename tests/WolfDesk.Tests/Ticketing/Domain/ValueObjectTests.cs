@@ -1,6 +1,6 @@
-using dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing.Domain;
 
 public class ValueObjectTests
 {

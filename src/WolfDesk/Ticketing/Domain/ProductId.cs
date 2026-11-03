@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>A product of the tenant, referenced by its id only. A value object: two ids with the same value are equal.</summary>
 public sealed record ProductId

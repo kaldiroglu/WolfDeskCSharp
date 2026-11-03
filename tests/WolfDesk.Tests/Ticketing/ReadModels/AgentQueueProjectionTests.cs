@@ -1,5 +1,7 @@
 using dev.kaldiroglu.WolfDesk.Tests.Ticketing;
-using dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Application;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 using dev.kaldiroglu.WolfDesk.Ticketing.ReadModels;
 

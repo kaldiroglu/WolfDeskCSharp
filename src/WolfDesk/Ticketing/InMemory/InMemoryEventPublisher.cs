@@ -1,3 +1,4 @@
+using dev.kaldiroglu.WolfDesk.Ticketing.Application;
 using dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
 namespace dev.kaldiroglu.WolfDesk.Ticketing.InMemory;

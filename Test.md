@@ -22,7 +22,7 @@ version's.
   name is rejected; a failed script rolls back; rolled-back changes are not kept; a deleted
   tenant is gone.
 
-## Ticketing (domain model)
+## Ticketing.Domain and Ticketing.Application (domain model)
 
 - `ValueObjectTests` — ids are equal by value and never empty; a response timeframe ends
   after it starts and reports the share of time left.
@@ -33,7 +33,7 @@ version's.
 - `ResponseTimeframeCalculationServiceTests` — the domain service counts working time in
   shifts only, applies the escalation factor, and fails when the shifts do not cover the
   response time.
-- `InMemoryTicketRepositoryTests` — each save increments the version; a ticket changed
+- `InMemoryTicketRepositoryTests` (in `Ticketing.InMemory`) — each save increments the version; a ticket changed
   since it was loaded is not saved; every save takes the next checkpoint, and a ticket
   saved twice is one change at its latest checkpoint; a save keeps the ticket's new events
   in the outbox; a rejected save keeps no events; a published event leaves the outbox.

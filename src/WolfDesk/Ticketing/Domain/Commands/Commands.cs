@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
 
 /// <summary>Command: give the ticket to an agent, with the time the agent has to respond.</summary>
 public sealed record AssignAgent(UserId Agent, ResponseTimeframe Timeframe, DateTimeOffset At);

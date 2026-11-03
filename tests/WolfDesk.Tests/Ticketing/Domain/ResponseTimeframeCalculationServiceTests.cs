@@ -1,7 +1,7 @@
-using dev.kaldiroglu.WolfDesk.Ticketing;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing.Domain;
 
 public class ResponseTimeframeCalculationServiceTests
 {

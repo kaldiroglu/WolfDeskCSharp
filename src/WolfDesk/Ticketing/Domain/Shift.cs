@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Ticketing;
+namespace dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 
 /// <summary>One of an agent's working periods, from the shift schedule (Preface, p. xix).</summary>
 public sealed record Shift

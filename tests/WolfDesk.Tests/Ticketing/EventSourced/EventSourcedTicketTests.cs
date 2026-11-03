@@ -1,7 +1,9 @@
-using dev.kaldiroglu.WolfDesk.Ticketing;
-using dev.kaldiroglu.WolfDesk.Ticketing.EventSourced;
 using MessageAdded = dev.kaldiroglu.WolfDesk.Ticketing.EventSourced.MessageAdded;
 using Ticket = dev.kaldiroglu.WolfDesk.Ticketing.EventSourced.Ticket;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Commands;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
+using dev.kaldiroglu.WolfDesk.Ticketing.EventSourced;
 
 namespace dev.kaldiroglu.WolfDesk.Tests.Ticketing.EventSourced;
 
