@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/WolfDesk/WolfDesk.csproj" />
+    <Project Path="src/WolfDesk.Demo/WolfDesk.Demo.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/WolfDesk.Tests/WolfDesk.Tests.csproj" />
