@@ -10,8 +10,33 @@ code, so every snippet on a slide is compiled and tested. The Java version is
 `WolfDeskJava`; both have the same design and the same tests.
 
 - **Project:** WolfDesk, C# version, started on 2026-10-28.
-- **Stack:** .NET 10 (`net10.0`), xUnit. No framework in the domain.
+- **Stack:** .NET 10 (`net10.0`), xUnit. No framework.
 - **Root namespace:** `dev.kaldiroglu.WolfDesk`.
+
+## What WolfDesk is, and what it is not
+
+- **A library with a demo.** The three bounded contexts are used in process. Each one's
+  public interface is its application layer: `TicketService` in ticketing, `RegisterTenant`
+  and `AddSupportedProduct` in tenants, `RecordTicketOpened` and `ChargeTenant` in billing.
+  Other bounded contexts read ticketing's published language, which the outbox relay
+  publishes.
+- **One program: the demo.** `WolfDeskDemo` runs one story through the three contexts
+  (`dotnet run --project src/WolfDesk.Demo`). Apart from it, the tests are the only callers.
+- **No network API and no user interface.** There are no HTTP endpoints and no
+  connection to a real message bus: billing subscribes to ticketing's messages through the
+  in-memory bus, in the same process. In chapter 8's terms, WolfDesk has driven adapters,
+  for storage and the message bus, and no driving adapter.
+- **No database.** Every adapter keeps its data in memory and behaves like a database:
+  tenants and billing have transactions, the ticket repository has optimistic concurrency,
+  and the ticket's save writes its events to the outbox in the same transaction. Nothing
+  needs Docker.
+- **No packages but xUnit and the test SDK**, which only the tests use.
+
+These are deliberate: the code stays about the domain model, and the in-memory adapters
+show transactions, concurrency and the outbox without infrastructure to install.
+`WolfDeskScopeTests` fails if the code stops matching this list: a package other than the
+test frameworks, a project on another SDK than `Microsoft.NET.Sdk`, a network or database
+type in `src`, or a program other than the demo.
 
 ## The business
 

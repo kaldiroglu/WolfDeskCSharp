@@ -84,6 +84,14 @@ These tests were checked against four broken versions (the relay never marking a
 the events written before the version check; billing's idempotency check removed; a private
 event published): all four were caught.
 
+## What WolfDesk is
+
+- `WolfDeskScopeTests` — the README's "What WolfDesk is, and what it is not": the only
+  packages are the test frameworks, every project uses the plain `Microsoft.NET.Sdk`, no
+  source file in `src` names a network or database type (implicit usings make a check of
+  the usings alone insufficient), and the demo is the only program. Checked against three
+  broken versions (an `HttpClient`, an Npgsql package, a second `Main`): each was caught.
+
 ## The demo
 
 - `WolfDeskDemoTests` — the demo runs to the end: the deadline it prints is the one the
