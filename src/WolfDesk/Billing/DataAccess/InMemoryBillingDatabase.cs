@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing.InMemory;
+namespace dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
 /// <summary>
 /// Mimics a relational database with dictionaries. A transaction works on a copy of the

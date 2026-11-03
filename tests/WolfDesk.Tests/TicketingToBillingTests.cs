@@ -1,5 +1,6 @@
-using dev.kaldiroglu.WolfDesk.Billing.InMemory;
-using dev.kaldiroglu.WolfDesk.Billing;
+using dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Billing.DataAccess;
+using dev.kaldiroglu.WolfDesk.Billing.Presentation;
 using dev.kaldiroglu.WolfDesk.Tests.Ticketing;
 using dev.kaldiroglu.WolfDesk.Ticketing.Application;
 using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
@@ -20,7 +21,7 @@ public class TicketingToBillingTests
         var tenant = TenantId.Random();
         var product = ProductId.Random();
         owners.Add(product.Value, tenant);
-        bus.Subscribe(new TicketingAnticorruptionLayer(owners, new RecordTicketOpened(billing)).On);
+        bus.Subscribe(new TicketingAnticorruptionLayer(new RecordTicketOpened(billing, owners)).On);
         var service = new TicketService(tickets,
             new ResponseTimeframeCalculationService(new InMemoryDepartmentRepository()),
             new FixedTimeProvider(DateTimeOffset.Parse("2026-10-20T12:00:00Z")));

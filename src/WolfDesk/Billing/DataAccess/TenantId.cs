@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing;
+namespace dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
 /// <summary>A tenant, as billing knows it.</summary>
 public sealed record TenantId

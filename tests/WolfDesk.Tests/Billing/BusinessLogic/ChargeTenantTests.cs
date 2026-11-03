@@ -1,7 +1,7 @@
-using dev.kaldiroglu.WolfDesk.Billing.InMemory;
-using dev.kaldiroglu.WolfDesk.Billing;
+using dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Billing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Billing.BusinessLogic;
 
 public class ChargeTenantTests
 {
@@ -14,8 +14,11 @@ public class ChargeTenantTests
 
     private void OpenTickets(int count, DateTimeOffset at)
     {
-        var record = new RecordTicketOpened(_db);
-        for (var i = 0; i < count; i++) record.Execute(_tenant, Guid.NewGuid(), at);
+        var product = Guid.NewGuid();
+        var owners = new InMemoryProductOwners();
+        owners.Add(product, _tenant);
+        var record = new RecordTicketOpened(_db, owners);
+        for (var i = 0; i < count; i++) record.Execute(product, Guid.NewGuid(), at);
     }
 
     [Fact]

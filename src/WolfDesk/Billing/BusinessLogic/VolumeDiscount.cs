@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing;
+namespace dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
 
 /// <summary>
 /// The automatic volume discounts for monthly tickets: 10% for opening more than 500

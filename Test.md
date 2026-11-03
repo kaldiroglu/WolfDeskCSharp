@@ -7,20 +7,34 @@ use the in-memory adapters, so they need no database. There are no integration o
 end-to-end tests: every adapter is in memory. The tests are the same cases as the Java
 version's.
 
-## Billing (transaction script)
+## Billing (transaction script, layered)
 
 - `VolumeDiscountTests` — the Preface's thresholds: 0% up to 500 tickets, 10% from 501,
   20% from 751, 30% from 1,001.
 - `ChargeTenantTests` — the invoice counts only the period's tickets and applies the
   discount; charging a period twice returns the first invoice; a failure after the
   invoice is written rolls the invoice back.
-- `RecordTicketOpenedTests` — a retried call counts the ticket once (idempotency).
+- `RecordTicketOpenedTests` — a retried call counts the ticket once (idempotency), for the
+  tenant that supports the ticket's product.
 
-## Tenants (active record)
+## Tenants (active record, layered with a service layer)
 
 - `TenantTests` — a tenant is saved and found with its categories and products; a blank
   name is rejected; a failed script rolls back; rolled-back changes are not kept; a deleted
   tenant is gone.
+
+## The layers of Billing and Tenants
+
+- `LayeredArchitectureTests` — Billing has the namespaces `Presentation`, `BusinessLogic`
+  and `DataAccess`, Tenants has `Service`, `BusinessLogic` and `DataAccess`, and each
+  reaches only the layer beneath it (Billing's presentation also uses ticketing's published
+  language, the messages it receives). It reads the `using`s and the names qualified from
+  the context's namespace, such as `BusinessLogic.VolumeDiscount`, which compile without a
+  `using`. Tenants' service layer may use the data access layer, and the test checks that
+  it calls only `StartTransaction`, `Commit` and `Rollback` on it. Checked against four
+  broken versions (a `using` and a qualified name from `DataAccess` to `BusinessLogic`, the
+  anticorruption layer using `DataAccess`, a service script reading a table): each was
+  caught.
 
 ## Ticketing.Domain and Ticketing.Application (domain model)
 

@@ -1,4 +1,6 @@
-namespace dev.kaldiroglu.WolfDesk.Tenants;
+using dev.kaldiroglu.WolfDesk.Tenants.DataAccess;
+
+namespace dev.kaldiroglu.WolfDesk.Tenants.BusinessLogic;
 
 /// <summary>
 /// An active record: an object that wraps a tenant's rows, encapsulates the database

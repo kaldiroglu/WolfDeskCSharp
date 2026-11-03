@@ -59,8 +59,8 @@ passes.
 
 | Namespace | Pattern | Chapter | What it does |
 |---|---|---|---|
-| `Billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
-| `Tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
+| `Billing` | Transaction script, layered | 5, 8 | Records opened tickets and charges a tenant per period with the volume discount |
+| `Tenants` | Active record, layered with a service layer | 5, 8 | A tenant with its ticket categories and supported products |
 | `Ticketing.Domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `Domain.Commands`, its domain events in `Domain.Events` |
 | `Ticketing.Application` | Application service | 6 | `TicketService`, the outbox relay and its event publisher port |
 | `Ticketing.EventSourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
@@ -75,11 +75,27 @@ keeps and rollback throws away.
 
 Each module has the architecture its business logic needs (chapter 8):
 
-- `Tenants` is layered: the `Tenant` active record depends on the concrete
-  `TenantsDatabase`, and the transaction scripts `RegisterTenant` and `AddSupportedProduct`
-  are its service layer.
-- `Billing` is transaction scripts, which are a service layer already; they work on the
-  database through the `IBillingDatabase` interface.
+- `Billing` and `Tenants` are layered, one namespace and folder per layer, named with the
+  book's original terms (p. 124). Each layer depends only on the layer beneath it (p. 120):
+
+  | Namespace | Layer | Types |
+  |---|---|---|
+  | `Billing.Presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
+  | `Billing.BusinessLogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
+  | `Billing.DataAccess` | Data access | `IBillingDatabase`, `IProductOwners`, the `Invoice`, `TenantId` and `ChargingPeriod` they store, and their in-memory implementations |
+  | `Tenants.Service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
+  | `Tenants.BusinessLogic` | Business logic | The active records `Tenant` and `Product` |
+  | `Tenants.DataAccess` | Data access | `TenantsDatabase` |
+
+  Billing has no separate service layer: a transaction script "essentially is a service
+  layer" (p. 124). Tenants needs one, because active records need external orchestration
+  (p. 124). Its scripts start, commit and roll back the transaction themselves, as the
+  book's `UserService.Create` does (p. 123), and otherwise work through the active records.
+  Tenants has no presentation layer: the tests and the demo call the service layer.
+  `TenantsDatabase` keeps its rows `internal`: in C# that is the whole assembly, so the
+  active records reach them from another namespace. `LayeredArchitectureTests` checks
+  each layer's `using`s and the names it qualifies from its context's namespace, such as
+  `BusinessLogic.VolumeDiscount`, which compile without a `using`.
 - `Ticketing` is ports & adapters, one namespace per role. The business logic layer
   defines the ports (chapter 8, p. 127): `ITicketRepository`, `IOutbox` and
   `IDepartmentRepository` are in `Ticketing.Domain`, and `Ticketing.InMemory` holds the
@@ -91,7 +107,7 @@ Each module has the architecture its business logic needs (chapter 8):
 - `Message` stays in `Ticketing.Domain` with `Ticket`. Its constructor and `MarkAsRead`
   are `internal`, which in C# opens them to the whole assembly, not only to the namespace.
 - The tags up to `stage-ch09` keep the earlier layout, with these types directly in
-  `Ticketing`; the decks quote the code at those tags.
+  `Ticketing`, `Billing` and `Tenants`; the decks quote the code at those tags.
 - `Ticketing.EventSourced` is ports & adapters too: `IEventStore` is its port, and
   `InMemoryEventStore` in `Ticketing.InMemory` its adapter.
 - `Ticketing.ReadModels` adds CQRS: the `Ticket` aggregate is the command execution model,
@@ -156,8 +172,8 @@ Chapter 9's patterns connect ticketing to billing (pp. 137–147):
   and leaves the private ones (assignment, messages, reassignment) inside. The messages
   carry only plain values, so consumers depend on nothing else in ticketing.
 - **Anticorruption layer.** Billing translates `TicketOpenedMessage` into its own model:
-  it finds the tenant from the ticket's product and calls `RecordTicketOpened`, which
-  counts a ticket once however often the message arrives.
+  it calls `RecordTicketOpened` with the ticket's product, and the script finds the tenant
+  that supports it and counts the ticket once however often the message arrives.
 
 ## The demo
 

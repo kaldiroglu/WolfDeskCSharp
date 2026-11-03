@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Tenants;
+namespace dev.kaldiroglu.WolfDesk.Tenants.BusinessLogic;
 
 /// <summary>A product the tenant supports. Saved as a row of the products table by its tenant.</summary>
 public class Product

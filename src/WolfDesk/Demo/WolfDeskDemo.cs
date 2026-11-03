@@ -1,10 +1,12 @@
 using System.Globalization;
-using dev.kaldiroglu.WolfDesk.Billing;
-using dev.kaldiroglu.WolfDesk.Billing.InMemory;
-using dev.kaldiroglu.WolfDesk.Tenants;
+using dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Billing.DataAccess;
+using dev.kaldiroglu.WolfDesk.Billing.Presentation;
+using dev.kaldiroglu.WolfDesk.Tenants.DataAccess;
+using dev.kaldiroglu.WolfDesk.Tenants.Service;
 using dev.kaldiroglu.WolfDesk.Ticketing.Application;
-using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.Domain.Events;
+using dev.kaldiroglu.WolfDesk.Ticketing.Domain;
 using dev.kaldiroglu.WolfDesk.Ticketing.InMemory;
 
 namespace dev.kaldiroglu.WolfDesk.Demo;
@@ -50,7 +52,7 @@ public sealed class WolfDeskDemo(TextWriter output)
 
         // The message bus: billing subscribes to ticketing's published language.
         var bus = new InMemoryEventPublisher();
-        bus.Subscribe(new TicketingAnticorruptionLayer(owners, new RecordTicketOpened(billingDb)).On);
+        bus.Subscribe(new TicketingAnticorruptionLayer(new RecordTicketOpened(billingDb, owners)).On);
 
         var at10 = Service(tickets, timeframes, Opened);
         var ticket = at10.Open(customer, [new ProductId(productId)], "Cannot log in", Priority.High);

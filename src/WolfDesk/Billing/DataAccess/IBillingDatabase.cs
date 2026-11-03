@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing;
+namespace dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
 /// <summary>
 /// The thin abstraction a transaction script may use to reach its storage (chapter 5,

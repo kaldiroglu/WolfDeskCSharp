@@ -1,4 +1,7 @@
-namespace dev.kaldiroglu.WolfDesk.Tenants;
+using dev.kaldiroglu.WolfDesk.Tenants.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Tenants.DataAccess;
+
+namespace dev.kaldiroglu.WolfDesk.Tenants.Service;
 
 /// <summary>A transaction script that creates a tenant through its active record.</summary>
 public sealed class RegisterTenant(TenantsDatabase db)

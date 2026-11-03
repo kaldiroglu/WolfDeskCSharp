@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing;
+namespace dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
 /// <summary>A calendar month in UTC.</summary>
 public readonly record struct ChargingPeriod(int Year, int Month)

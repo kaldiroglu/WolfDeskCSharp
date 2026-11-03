@@ -1,4 +1,4 @@
-namespace dev.kaldiroglu.WolfDesk.Billing.InMemory;
+namespace dev.kaldiroglu.WolfDesk.Billing.DataAccess;
 
 /// <summary>Mimics a table of the products each tenant supports, as billing keeps it.</summary>
 public class InMemoryProductOwners : IProductOwners

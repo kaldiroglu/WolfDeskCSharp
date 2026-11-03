@@ -1,6 +1,8 @@
-using dev.kaldiroglu.WolfDesk.Tenants;
+using dev.kaldiroglu.WolfDesk.Tenants.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Tenants.DataAccess;
+using dev.kaldiroglu.WolfDesk.Tenants.Service;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Tenants;
+namespace dev.kaldiroglu.WolfDesk.Tests.Tenants.BusinessLogic;
 
 public class TenantTests
 {

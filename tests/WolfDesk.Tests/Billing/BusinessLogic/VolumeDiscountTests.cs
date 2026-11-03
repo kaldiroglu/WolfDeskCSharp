@@ -1,6 +1,6 @@
-using dev.kaldiroglu.WolfDesk.Billing;
+using dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Billing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Billing.BusinessLogic;
 
 public class VolumeDiscountTests
 {

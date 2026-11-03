@@ -1,4 +1,6 @@
-namespace dev.kaldiroglu.WolfDesk.Billing;
+using dev.kaldiroglu.WolfDesk.Billing.DataAccess;
+
+namespace dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
 
 /// <summary>
 /// Charges a tenant for the tickets opened in one charging period, with the volume

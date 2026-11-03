@@ -1,7 +1,7 @@
-namespace dev.kaldiroglu.WolfDesk.Tenants;
+namespace dev.kaldiroglu.WolfDesk.Tenants.DataAccess;
 
 /// <summary>
-/// The data access layer the active records are coupled to. It mimics three tables,
+/// The data access layer, the layer the active records depend on. It mimics three tables,
 /// tenants, products and ticket categories, with collections. A transaction works on a copy
 /// of the tables; commit keeps the copy, rollback throws it away.
 /// </summary>

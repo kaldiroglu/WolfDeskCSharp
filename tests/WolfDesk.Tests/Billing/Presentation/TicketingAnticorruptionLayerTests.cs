@@ -1,8 +1,9 @@
-using dev.kaldiroglu.WolfDesk.Billing.InMemory;
-using dev.kaldiroglu.WolfDesk.Billing;
+using dev.kaldiroglu.WolfDesk.Billing.BusinessLogic;
+using dev.kaldiroglu.WolfDesk.Billing.DataAccess;
+using dev.kaldiroglu.WolfDesk.Billing.Presentation;
 using dev.kaldiroglu.WolfDesk.Ticketing.PublishedLanguage;
 
-namespace dev.kaldiroglu.WolfDesk.Tests.Billing;
+namespace dev.kaldiroglu.WolfDesk.Tests.Billing.Presentation;
 
 public class TicketingAnticorruptionLayerTests
 {
@@ -17,7 +18,7 @@ public class TicketingAnticorruptionLayerTests
     public TicketingAnticorruptionLayerTests()
     {
         _owners.Add(_product, _tenant);
-        _acl = new TicketingAnticorruptionLayer(_owners, new RecordTicketOpened(_db));
+        _acl = new TicketingAnticorruptionLayer(new RecordTicketOpened(_db, _owners));
     }
 
     private TicketOpenedMessage OpenedMessage(Guid ticket) => new(ticket, [_product], "High", Opened);
