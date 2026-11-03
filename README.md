@@ -73,29 +73,75 @@ keeps and rollback throws away.
 
 ## Architecture
 
-Each module has the architecture its business logic needs (chapter 8):
+### One architecture per module
 
-- `Billing` and `Tenants` are layered, one namespace and folder per layer, named with the
-  book's original terms (p. 124). Each layer depends only on the layer beneath it (p. 120):
+Each module has the architecture its business logic needs (chapter 8). The book warns:
+"Enforcing a single, bounded, context-wide architecture will inadvertently lead to
+accidental complexity" (p. 134).
 
-  | Namespace | Layer | Types |
-  |---|---|---|
-  | `Billing.Presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
-  | `Billing.BusinessLogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
-  | `Billing.DataAccess` | Data access | `IBillingDatabase`, `IProductOwners`, the `Invoice`, `TenantId` and `ChargingPeriod` they store, and their in-memory implementations |
-  | `Tenants.Service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
-  | `Tenants.BusinessLogic` | Business logic | The active records `Tenant` and `Product` |
-  | `Tenants.DataAccess` | Data access | `TenantsDatabase` |
+| Module | Business logic (chapters 5–7) | Architecture (chapter 8) | Why |
+|---|---|---|---|
+| `Billing` | Transaction script | Layered | A good fit for transaction scripts and active records (p. 124) |
+| `Tenants` | Active record | Layered, with a service layer | The same; active records need a service layer to orchestrate them (p. 124) |
+| `Ticketing` | Domain model, event-sourced domain model | Ports & adapters | A layered architecture "makes it challenging to implement a domain model" (p. 125) |
+| `Ticketing.ReadModels` | — | CQRS | The agents' queues: a second model of the same tickets |
 
-  Billing has no separate service layer: a transaction script "essentially is a service
-  layer" (p. 124). Tenants needs one, because active records need external orchestration
-  (p. 124). Its scripts start, commit and roll back the transaction themselves, as the
-  book's `UserService.Create` does (p. 123), and otherwise work through the active records.
-  Tenants has no presentation layer: the tests and the demo call the service layer.
-  `TenantsDatabase` keeps its rows `internal`: in C# that is the whole assembly, so the
-  active records reach them from another namespace. `LayeredArchitectureTests` checks
-  each layer's `using`s and the names it qualifies from its context's namespace, such as
-  `BusinessLogic.VolumeDiscount`, which compile without a `using`.
+The namespaces and folders show the architecture: Billing and Tenants have one per layer,
+Ticketing one per role.
+
+### Layered: Billing and Tenants
+
+The namespaces are named with the book's original terms (p. 124):
+
+| Namespace | Layer | Types |
+|---|---|---|
+| `Billing.Presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
+| `Billing.BusinessLogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
+| `Billing.DataAccess` | Data access | `IBillingDatabase`, `IProductOwners`, the `Invoice`, `TenantId` and `ChargingPeriod` they store, and their in-memory implementations |
+| `Tenants.Service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
+| `Tenants.BusinessLogic` | Business logic | The active records `Tenant` and `Product` |
+| `Tenants.DataAccess` | Data access | `TenantsDatabase` |
+
+The rules, and how the code keeps them:
+
+- **Each layer depends only on the layer beneath it** (p. 120). The presentation layer
+  calls the business logic, the business logic calls data access, and data access depends
+  on no other layer. Billing's presentation layer also reads ticketing's published
+  language: those are the messages it receives.
+- **Billing has no separate service layer.** A transaction script "essentially is a
+  service layer" (p. 124); a service layer over it would only repeat its methods.
+- **Tenants needs one**, because active records need external orchestration (p. 124).
+  `RegisterTenant` and `AddSupportedProduct` start, commit and roll back the transaction
+  themselves, as the book's `UserService.Create` does (p. 123): this is the one call from
+  the service layer straight into data access, and it is limited to the transaction.
+  Everything else goes through the active records.
+- **Tenants has no presentation layer**: no endpoint and no subscription, only the tests
+  and the demo call its service layer.
+- **The anticorruption layer only translates.** Billing needs the tenant of a ticket's
+  product. The lookup reads data access, so it is in the transaction script
+  `RecordTicketOpened`, not in the anticorruption layer: a presentation layer that read
+  `IProductOwners` itself would skip the business logic layer.
+- **The database interface belongs to data access.** `IBillingDatabase` is an interface,
+  but it sits in `Billing.DataAccess` with its implementation, and the business logic
+  depends on it there: in a layered architecture, the business logic layer depends on the
+  layer beneath. Ports & adapters, below, reverses that relationship, by the dependency
+  inversion principle (p. 126): the business logic layer defines the ports, and the
+  infrastructure implements them (p. 127).
+- **The data access layer stores plain records.** `Invoice`, `TenantId` and
+  `ChargingPeriod` are in `Billing.DataAccess`, because the database reads and writes them
+  and data access may not depend on the layer above.
+- `TenantsDatabase` keeps its rows and table operations `internal`. In C# that is the
+  whole assembly, so the active records reach them from another namespace, while the
+  tests, in another assembly, cannot.
+
+`LayeredArchitectureTests` checks each layer's `using`s, and that tenants' service layer
+calls only `StartTransaction`, `Commit` and `Rollback` on the database. A `using` is not
+the only way to reach another layer in C#: inside `Billing.DataAccess` the parent namespace
+`Billing` is in scope, so `BusinessLogic.VolumeDiscount` compiles without one. The test
+reads those qualified names too.
+
+### Ports & adapters: Ticketing
+
 - `Ticketing` is ports & adapters, one namespace per role. The business logic layer
   defines the ports (chapter 8, p. 127): `ITicketRepository`, `IOutbox` and
   `IDepartmentRepository` are in `Ticketing.Domain`, and `Ticketing.InMemory` holds the
@@ -106,17 +152,30 @@ Each module has the architecture its business logic needs (chapter 8):
   layer.
 - `Message` stays in `Ticketing.Domain` with `Ticket`. Its constructor and `MarkAsRead`
   are `internal`, which in C# opens them to the whole assembly, not only to the namespace.
-- The tags up to `stage-ch09` keep the earlier layout, with these types directly in
-  `Ticketing`, `Billing` and `Tenants`; the decks quote the code at those tags.
 - `Ticketing.EventSourced` is ports & adapters too: `IEventStore` is its port, and
   `InMemoryEventStore` in `Ticketing.InMemory` its adapter.
-- `Ticketing.ReadModels` adds CQRS: the `Ticket` aggregate is the command execution model,
-  and `AgentQueueProjection` projects the saved tickets into each agent's queue. Each
-  catch-up reads the tickets saved after its last checkpoint, which the repository stamps
-  on every save, like a `rowversion` column. Resetting the checkpoint rebuilds the queues.
-- Ticketing and billing communicate through messages (chapter 9): ticketing's `IOutbox` is a
-  port, `OutboxRelay` publishes through the `IEventPublisher` port, and billing's
-  `TicketingAnticorruptionLayer` subscribes. `TicketingToBillingTests` wires the two.
+
+### CQRS: the agents' queues
+
+`Ticketing.ReadModels` adds CQRS: the `Ticket` aggregate is the command execution model,
+and `AgentQueueProjection` projects the saved tickets into each agent's queue. Each
+catch-up reads the tickets saved after its last checkpoint, which the repository stamps on
+every save, like a `rowversion` column. Resetting the checkpoint rebuilds the queues.
+
+### Between the contexts
+
+Ticketing and billing communicate through messages (chapter 9): ticketing's `IOutbox` is a
+port, `OutboxRelay` publishes through the `IEventPublisher` port, and billing's
+`TicketingAnticorruptionLayer`, its presentation layer, subscribes.
+`TicketingToBillingTests` wires the two. Tenants and billing share no types: billing keeps
+its own `TenantId` and its own table of product owners.
+
+### The layout at the tags
+
+The tags up to `stage-ch09` keep the earlier layout, with these types directly in
+`Ticketing`, `Billing` and `Tenants`; the decks quote the code at those tags. The tag
+`stage-ch09-layered` is the first with Billing and Tenants one namespace per layer; decks
+08 and 09 quote Billing and Tenants there.
 
 ## The ticket's rules
 
